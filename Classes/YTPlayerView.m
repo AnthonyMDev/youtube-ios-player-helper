@@ -67,6 +67,40 @@ NSString static *const kYTPlayerStaticProxyRegexPattern = @"^https://content.goo
 @end
 
 @implementation YTPlayerView
+{
+    NSString *_currentVideoId;
+}
+
+#pragma mark - Object Lifecycle
+
+- (void)commonInit {
+    [self registerForApplicationNotifications];
+}
+
+- (void)registerForApplicationNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:[UIApplication sharedApplication]];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:[UIApplication sharedApplication]];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification {
+    [self removeWebView];
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification {
+    
+}
+
+#pragma mark - Loading methods
 
 - (BOOL)loadWithVideoId:(NSString *)videoId {
   return [self loadWithVideoId:videoId playerVars:nil];
